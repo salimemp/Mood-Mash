@@ -1,6 +1,7 @@
 import { useState, useCallback, FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { Shield, Mail, Lock, Eye, EyeOff, User, CheckCircle, Sparkles, AlertTriangle, Check } from 'lucide-react';
 
 interface RegisterForm {
@@ -182,6 +183,11 @@ export function Register() {
       <div className="absolute top-6 right-6 flex items-center gap-2 glass px-4 py-2 rounded-full">
         <Shield className="w-4 h-4 text-emerald-400" />
         <span className="text-xs text-slate-300">End-to-End Encrypted</span>
+      </div>
+
+      {/* Language Switcher */}
+      <div className="absolute top-6 left-6">
+        <LanguageSwitcher />
       </div>
 
       {/* Main Card */}

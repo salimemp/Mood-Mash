@@ -2,31 +2,114 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCompliance } from '../contexts/ComplianceContext';
-import { Shield, Settings, Lock, Eye, User, TrendingUp, Plus, ChevronRight, Sparkles, Bell, Sun, Moon } from 'lucide-react';
+import { useMood } from '../contexts/MoodContext';
+import { useGamification } from '../contexts/GamificationContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import {
+  MoodSummaryCards,
+  MoodDistributionChart,
+  MoodStatisticsChart,
+  WeeklyComparisonChart,
+} from '../components/MoodStatistics';
+import { MoodLogger, QuickMoodEntry } from '../components/MoodLogger';
+import { MoodHistory, YearCalendar } from '../components/MoodHistory';
+import { AIInsights } from '../components/AIInsights';
+import { DataExport } from '../components/DataExport';
+import { DailyMoodInsight } from '../components/DailyMoodInsight';
+import { MoodTimeline } from '../components/MoodTimeline';
+import { Challenges } from '../components/Challenges';
+import { Leaderboard } from '../components/Leaderboard';
+import { AchievementBadges } from '../components/AchievementBadges';
+import { GuidedMeditation } from '../components/GuidedMeditation';
+import { YogaPractice } from '../components/YogaPractice';
+import { MusicTherapy } from '../components/MusicTherapy';
+import { ARExperienceHub } from '../components/ARExperienceHub';
+import BreathingExerciseComponent from '../components/BreathingExercise';
+import SleepRestComponent from '../components/SleepRest';
+import ExerciseMovementComponent from '../components/ExerciseMovement';
+import {
+  Shield,
+  Settings,
+  Lock,
+  Eye,
+  ChevronRight,
+  Sparkles,
+  Bell,
+  Sun,
+  Moon,
+  Calendar,
+  BarChart2,
+  History,
+  Brain,
+  Download,
+  Heart,
+  Target,
+  Trophy,
+  Award,
+  Zap,
+  Users,
+  Music,
+  Activity,
+  Glasses,
+  Wind,
+  Cloud,
+  Dumbbell,
+} from 'lucide-react';
 
-const mockData = [
-  { date: 'Mon', mood: 6, energy: 7 },
-  { date: 'Tue', mood: 5, energy: 6 },
-  { date: 'Wed', mood: 7, energy: 8 },
-  { date: 'Thu', mood: 8, energy: 7 },
-  { date: 'Fri', mood: 6, energy: 6 },
-  { date: 'Sat', mood: 9, energy: 9 },
-  { date: 'Sun', mood: 8, energy: 8 },
-];
+type DashboardView = 'overview' | 'statistics' | 'history' | 'calendar' | 'insights' | 'export' | 'wellness' | 'timeline' | 'challenges' | 'leaderboard' | 'achievements' | 'meditation' | 'yoga' | 'music' | 'ar' | 'breathing' | 'sleep' | 'exercise';
 
 export function Dashboard() {
   const { user, logout } = useAuth();
   const { getComplianceStatus } = useCompliance();
+  const { entries } = useMood();
+  const { profile } = useGamification();
 
-  const [selectedPeriod, setSelectedPeriod] = useState('week');
+  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [showMoodLogger, setShowMoodLogger] = useState(false);
+  const [currentView, setCurrentView] = useState<DashboardView>('overview');
 
   const gdprStatus = getComplianceStatus('gdpr');
 
-  // Calculate averages
-  const avgMood = mockData.reduce((acc, d) => acc + d.mood, 0) / mockData.length;
-  const avgEnergy = mockData.reduce((acc, d) => acc + d.energy, 0) / mockData.length;
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const mainNavItems = [
+    { id: 'overview' as DashboardView, icon: Sparkles, label: 'Overview' },
+    { id: 'wellness' as DashboardView, icon: Heart, label: 'Wellness' },
+    { id: 'timeline' as DashboardView, icon: Activity, label: 'Timeline' },
+    { id: 'statistics' as DashboardView, icon: BarChart2, label: 'Statistics' },
+  ];
+
+  const wellnessNavItems = [
+    { id: 'challenges' as DashboardView, icon: Target, label: 'Challenges' },
+    { id: 'leaderboard' as DashboardView, icon: Trophy, label: 'Leaderboard' },
+    { id: 'achievements' as DashboardView, icon: Award, label: 'Achievements' },
+    { id: 'meditation' as DashboardView, icon: Zap, label: 'Meditation' },
+    { id: 'yoga' as DashboardView, icon: Activity, label: 'Yoga' },
+    { id: 'music' as DashboardView, icon: Music, label: 'Music' },
+    { id: 'breathing' as DashboardView, icon: Wind, label: 'Breathing' },
+    { id: 'sleep' as DashboardView, icon: Cloud, label: 'Sleep' },
+    { id: 'exercise' as DashboardView, icon: Dumbbell, label: 'Exercise' },
+  ];
+
+  const toolsNavItems = [
+    { id: 'history' as DashboardView, icon: History, label: 'History' },
+    { id: 'calendar' as DashboardView, icon: Calendar, label: 'Calendar' },
+    { id: 'insights' as DashboardView, icon: Brain, label: 'AI Insights' },
+    { id: 'export' as DashboardView, icon: Download, label: 'Export' },
+  ];
+
+  const arNavItems = [
+    { id: 'ar' as DashboardView, icon: Glasses, label: 'AR Experience' },
+  ];
+
+  const allNavItems = [...mainNavItems, ...wellnessNavItems, ...toolsNavItems, ...arNavItems];
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -42,6 +125,49 @@ export function Dashboard() {
                 MoodMash
               </h1>
             </Link>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="hidden lg:flex items-center gap-1 glass rounded-full p-1">
+            {allNavItems.map(({ id, icon: Icon, label }) => (
+              <button
+                key={id}
+                onClick={() => setCurrentView(id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+                  currentView === id
+                    ? 'bg-violet-500 text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="text-sm font-medium">{label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile Wellness Dropdown */}
+          <div className="lg:hidden">
+            <select
+              value={currentView}
+              onChange={(e) => setCurrentView(e.target.value as DashboardView)}
+              className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+            >
+              <optgroup label="Main">
+                {mainNavItems.map(({ id, label }) => (
+                  <option key={id} value={id}>{label}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Wellness">
+                {wellnessNavItems.map(({ id, label }) => (
+                  <option key={id} value={id}>{label}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Tools">
+                {toolsNavItems.map(({ id, label }) => (
+                  <option key={id} value={id}>{label}</option>
+                ))}
+              </optgroup>
+            </select>
           </div>
 
           <div className="flex items-center gap-4">
@@ -70,6 +196,9 @@ export function Dashboard() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-violet-500 rounded-full" />
             </button>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {/* User Menu */}
             <div className="relative">
@@ -135,166 +264,326 @@ export function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Welcome Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Good afternoon!</h2>
-            <p className="text-slate-400">Here's your mood summary for this {selectedPeriod}</p>
-          </div>
-          <div className="flex items-center gap-3 mt-4 md:mt-0">
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-            >
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </select>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-lg text-white font-medium hover:from-violet-500 hover:to-fuchsia-500 transition-all">
-              <Plus className="w-4 h-4" />
-              Log Mood
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400 text-sm">Average Mood</span>
-              <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-violet-400" />
+        {/* Overview View */}
+        {currentView === 'overview' && (
+          <>
+            {/* Welcome Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">{getGreeting()}!</h2>
+                <p className="text-slate-400">Here's your mood summary for this {selectedPeriod}</p>
+              </div>
+              <div className="flex items-center gap-3 mt-4 md:mt-0">
+                <select
+                  value={selectedPeriod}
+                  onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+                >
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
+                </select>
+                <button
+                  onClick={() => setShowMoodLogger(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-lg text-white font-medium hover:from-violet-500 hover:to-fuchsia-500 transition-all"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Log Mood
+                </button>
               </div>
             </div>
-            <p className="text-4xl font-bold text-white mb-2">{avgMood.toFixed(1)}</p>
-            <p className="text-emerald-400 text-sm flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              +12% from last week
-            </p>
-          </div>
 
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400 text-sm">Average Energy</span>
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-              </div>
+            {/* Summary Cards */}
+            <div className="mb-8">
+              <MoodSummaryCards range={selectedPeriod} />
             </div>
-            <p className="text-4xl font-bold text-white mb-2">{avgEnergy.toFixed(1)}</p>
-            <p className="text-emerald-400 text-sm flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              +8% from last week
-            </p>
-          </div>
 
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400 text-sm">Total Entries</span>
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <User className="w-5 h-5 text-blue-400" />
-              </div>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <MoodStatisticsChart range={selectedPeriod} />
+              <MoodDistributionChart range={selectedPeriod} />
             </div>
-            <p className="text-4xl font-bold text-white mb-2">28</p>
-            <p className="text-slate-400 text-sm">This month</p>
-          </div>
 
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400 text-sm">Current Streak</span>
-              <div className="w-10 h-10 rounded-xl bg-fuchsia-500/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-fuchsia-400" />
-              </div>
+            {/* Weekly Comparison */}
+            <div className="mb-8">
+              <WeeklyComparisonChart />
             </div>
-            <p className="text-4xl font-bold text-white mb-2">5</p>
-            <p className="text-amber-400 text-sm flex items-center gap-1">
-              Days logging
-            </p>
-          </div>
-        </div>
 
-        {/* Weekly Summary Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Mood Card */}
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Mood This Week</h3>
-              <span className="text-slate-400 text-sm">Mon - Sun</span>
+            {/* Quick Mood Entry */}
+            <div className="mb-8">
+              <QuickMoodEntry onClick={() => setShowMoodLogger(true)} />
             </div>
-            <div className="space-y-4">
-              {mockData.map((day) => (
-                <div key={day.date} className="flex items-center gap-4">
-                  <span className="w-8 text-slate-400 text-sm font-medium">{day.date}</span>
-                  <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all"
-                      style={{ width: `${(day.mood / 10) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-white text-sm w-8 font-medium">{day.mood}/10</span>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <button
+                onClick={() => setShowMoodLogger(true)}
+                className="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl p-6 text-left hover:from-violet-500 hover:to-fuchsia-500 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mb-4">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-              ))}
-            </div>
-          </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Log Today's Mood</h3>
+                <p className="text-slate-300 text-sm group-hover:text-white transition-colors">How are you feeling right now?</p>
+              </button>
 
-          {/* Energy Card */}
-          <div className="glass rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Energy This Week</h3>
-              <span className="text-slate-400 text-sm">Mon - Sun</span>
-            </div>
-            <div className="space-y-4">
-              {mockData.map((day) => (
-                <div key={day.date} className="flex items-center gap-4">
-                  <span className="w-8 text-slate-400 text-sm font-medium">{day.date}</span>
-                  <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
-                      style={{ width: `${(day.energy / 10) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-white text-sm w-8 font-medium">{day.energy}/10</span>
+              <button
+                onClick={() => setCurrentView('insights')}
+                className="glass rounded-2xl p-6 text-left hover:bg-slate-800/50 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center mb-4">
+                  <Brain className="w-6 h-6 text-violet-400" />
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                <h3 className="text-xl font-semibold text-white mb-2">AI Insights</h3>
+                <p className="text-slate-400 text-sm group-hover:text-white transition-colors">Discover patterns in your mood</p>
+              </button>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <button className="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl p-6 text-left hover:from-violet-500 hover:to-fuchsia-500 transition-all group">
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mb-4">
-              <Plus className="w-6 h-6 text-white" />
+              <button
+                onClick={() => setCurrentView('export')}
+                className="glass rounded-2xl p-6 text-left hover:bg-slate-800/50 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4">
+                  <Download className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Export Data</h3>
+                <p className="text-slate-400 text-sm group-hover:text-white transition-colors">Download your mood history</p>
+              </button>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Log Today's Mood</h3>
-            <p className="text-slate-300 text-sm group-hover:text-white transition-colors">How are you feeling right now?</p>
-          </button>
+          </>
+        )}
 
-          <Link
-            to="/settings/privacy"
-            className="glass rounded-2xl p-6 text-left hover:bg-slate-800/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center mb-4">
-              <Eye className="w-6 h-6 text-violet-400" />
+        {/* Statistics View */}
+        {currentView === 'statistics' && (
+          <>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">Mood Statistics</h2>
+                <p className="text-slate-400">Track your emotional patterns over time</p>
+              </div>
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
+                className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+              >
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+              </select>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Privacy Dashboard</h3>
-            <p className="text-slate-400 text-sm group-hover:text-white transition-colors">Manage your data and consents</p>
-          </Link>
 
-          <Link
-            to="/settings/security"
-            className="glass rounded-2xl p-6 text-left hover:bg-slate-800/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-xl bg-fuchsia-500/20 flex items-center justify-center mb-4">
-              <Shield className="w-6 h-6 text-fuchsia-400" />
+            <div className="mb-8">
+              <MoodSummaryCards range={selectedPeriod} />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Security Center</h3>
-            <p className="text-slate-400 text-sm group-hover:text-white transition-colors">2FA, passkeys, and sessions</p>
-          </Link>
-        </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <MoodStatisticsChart range={selectedPeriod} />
+              <MoodDistributionChart range={selectedPeriod} />
+            </div>
+
+            <div className="mb-8">
+              <WeeklyComparisonChart />
+            </div>
+          </>
+        )}
+
+        {/* History View */}
+        {currentView === 'history' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Mood History</h2>
+              <p className="text-slate-400">Browse and manage your mood entries</p>
+            </div>
+
+            <MoodHistory />
+          </>
+        )}
+
+        {/* Calendar View */}
+        {currentView === 'calendar' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Mood Calendar</h2>
+              <p className="text-slate-400">Visualize your emotional journey over time</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <MoodHistory showCalendar />
+              </div>
+              <div>
+                <YearCalendar entries={entries} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* AI Insights View */}
+        {currentView === 'insights' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">AI Insights</h2>
+              <p className="text-slate-400">Personalized analysis of your mood patterns using Gemini AI</p>
+            </div>
+
+            <AIInsights />
+          </>
+        )}
+
+        {/* Export View */}
+        {currentView === 'export' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Data Export</h2>
+              <p className="text-slate-400">Export your mood data in various formats</p>
+            </div>
+
+            <DataExport />
+          </>
+        )}
+
+        {/* Wellness View */}
+        {currentView === 'wellness' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Daily Wellness</h2>
+              <p className="text-slate-400">Your personalized wellness journey</p>
+            </div>
+
+            <DailyMoodInsight />
+          </>
+        )}
+
+        {/* Timeline View */}
+        {currentView === 'timeline' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Mood Timeline</h2>
+              <p className="text-slate-400">Explore your emotional journey over time</p>
+            </div>
+
+            <MoodTimeline />
+          </>
+        )}
+
+        {/* Challenges View */}
+        {currentView === 'challenges' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Challenges</h2>
+              <p className="text-slate-400">Complete challenges to earn XP and level up</p>
+            </div>
+
+            <Challenges />
+          </>
+        )}
+
+        {/* Leaderboard View */}
+        {currentView === 'leaderboard' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Leaderboard</h2>
+              <p className="text-slate-400">See how you rank against other users</p>
+            </div>
+
+            <Leaderboard />
+          </>
+        )}
+
+        {/* Achievements View */}
+        {currentView === 'achievements' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Achievements</h2>
+              <p className="text-slate-400">Track your progress and unlock badges</p>
+            </div>
+
+            <AchievementBadges />
+          </>
+        )}
+
+        {/* Meditation View */}
+        {currentView === 'meditation' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Guided Meditation</h2>
+              <p className="text-slate-400">Find peace with 100+ meditation sessions</p>
+            </div>
+
+            <GuidedMeditation />
+          </>
+        )}
+
+        {/* Yoga View */}
+        {currentView === 'yoga' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Yoga Practice</h2>
+              <p className="text-slate-400">Explore 100+ yoga poses and guided routines</p>
+            </div>
+
+            <YogaPractice />
+          </>
+        )}
+
+        {/* Music View */}
+        {currentView === 'music' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Music Therapy</h2>
+              <p className="text-slate-400">Curated playlists for every mood</p>
+            </div>
+
+            <MusicTherapy />
+          </>
+        )}
+
+        {/* Breathing Exercises View */}
+        {currentView === 'breathing' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Breathing Exercises</h2>
+              <p className="text-slate-400">Practice Pranayama and breathing techniques for wellness</p>
+            </div>
+
+            <BreathingExerciseComponent />
+          </>
+        )}
+
+        {/* Sleep & Rest View */}
+        {currentView === 'sleep' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Sleep & Rest</h2>
+              <p className="text-slate-400">Discover peaceful content for better sleep</p>
+            </div>
+
+            <SleepRestComponent />
+          </>
+        )}
+
+        {/* Exercise & Movement View */}
+        {currentView === 'exercise' && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">Exercise & Movement</h2>
+              <p className="text-slate-400">Find the perfect movement for your body and mind</p>
+            </div>
+
+            <ExerciseMovementComponent />
+          </>
+        )}
+
+        {/* AR Experience View */}
+        {currentView === 'ar' && (
+          <ARExperienceHub
+            onClose={() => setCurrentView('overview')}
+            userId={user?.id || 'user1'}
+            userName={user?.name || 'User'}
+          />
+        )}
 
         {/* Compliance Footer */}
-        <div className="mt-8 pt-8 border-t border-slate-800">
+        <div className="mt-12 pt-8 border-t border-slate-800">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <span className="text-slate-500 text-sm">Your data is protected under:</span>
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -307,6 +596,26 @@ export function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Mood Logger Modal */}
+      {showMoodLogger && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg">
+            <button
+              onClick={() => setShowMoodLogger(false)}
+              className="absolute -top-2 -right-2 z-10 p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <MoodLogger
+              onClose={() => setShowMoodLogger(false)}
+              onSave={() => setShowMoodLogger(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ComplianceProvider } from './contexts/ComplianceContext';
 import { EncryptionProvider } from './contexts/EncryptionContext';
+import { MoodProvider } from './contexts/MoodContext';
+import { GamificationProvider } from './contexts/GamificationContext';
+import { AdaptiveProvider } from './contexts/AdaptiveUIContext';
+import { I18nProvider } from './contexts/I18nContext';
 import './App.css';
 
 // ============================================================================
@@ -250,15 +254,23 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <ComplianceProvider>
-        <EncryptionProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
-        </EncryptionProvider>
-      </ComplianceProvider>
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <ComplianceProvider>
+          <EncryptionProvider>
+            <MoodProvider>
+              <GamificationProvider>
+                <AdaptiveProvider>
+                  <Router>
+                    <AppRoutes />
+                  </Router>
+                </AdaptiveProvider>
+              </GamificationProvider>
+            </MoodProvider>
+          </EncryptionProvider>
+        </ComplianceProvider>
+      </AuthProvider>
+    </I18nProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { Shield, Key, Fingerprint, Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight, Check } from 'lucide-react';
 
 type LoginMethod = 'email' | 'magic' | 'passkey' | 'biometric';
@@ -95,6 +96,11 @@ export function Login() {
         <Shield className="w-4 h-4 text-emerald-400 shield-glow" />
         <span>End-to-End Encrypted</span>
         <Lock className="w-3 h-3 text-emerald-400 lock-pulse" />
+      </div>
+
+      {/* Language Switcher */}
+      <div className="absolute top-4 left-4">
+        <LanguageSwitcher />
       </div>
 
       <div className="w-full max-w-lg relative z-10">
