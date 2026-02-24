@@ -597,7 +597,7 @@ export function sanitizeEmail(email: string): string {
 
 export function formatEmailDisplayName(name: string): string {
   // Remove any special characters that could cause issues in email display
-  return name.replace(/[<>{}()\[\]]/g, '').trim();
+  return name.replace(/[<>{}()[\]]/g, '').trim();
 }
 
 // ============================================================================

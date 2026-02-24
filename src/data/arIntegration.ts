@@ -32,6 +32,7 @@ declare global {
     updateRenderState?: (state: XRRenderStateInit) => void;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface XRReferenceSpace extends EventTarget {}
 
   interface XRFrame {
@@ -548,7 +549,7 @@ export class EnvironmentRenderer {
    * Create stars style
    */
   private createStarsStyle(count: number): string {
-    let styles = 'position: absolute; width: 100%; height: 100%; overflow: hidden;';
+    const styles = 'position: absolute; width: 100%; height: 100%; overflow: hidden;';
     let starsHtml = '';
 
     for (let i = 0; i < count; i++) {
@@ -578,7 +579,7 @@ export class EnvironmentRenderer {
    * Create trees style
    */
   private createTreesStyle(count: number): string {
-    let styles = 'position: absolute; bottom: 35%; width: 100%; height: 100%;';
+    const styles = 'position: absolute; bottom: 35%; width: 100%; height: 100%;';
     let treesHtml = '';
 
     for (let i = 0; i < count; i++) {

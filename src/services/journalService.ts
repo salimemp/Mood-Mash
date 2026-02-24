@@ -425,7 +425,7 @@ export async function getJournalEntriesWithMood(
       .filter((entry) => entry.related_mood_entry)
       .map((entry) => entry.related_mood_entry!);
 
-    let moodMap: Record<string, { id: string; emotion: string; intensity: number }> = {};
+    const moodMap: Record<string, { id: string; emotion: string; intensity: number }> = {};
 
     if (journalIds.length > 0) {
       const { data: moodEntries } = await client

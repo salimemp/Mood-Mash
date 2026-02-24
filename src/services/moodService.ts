@@ -33,6 +33,7 @@ export interface CreateMoodEntryData {
   entry_time?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateMoodEntryData extends Partial<CreateMoodEntryData> {}
 
 export interface MoodQueryParams {

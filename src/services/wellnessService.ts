@@ -30,6 +30,7 @@ export interface CreateWellnessSessionData {
   audio_id?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateWellnessSessionData extends Partial<CreateWellnessSessionData> {}
 
 export interface WellnessQueryParams {

@@ -226,52 +226,52 @@ function parseAIGenerateResponse(response: string, entries: MoodEntry[]): AIInsi
   const insights: AIInsight[] = [];
 
   // Parse summary section
-  const summaryMatch = response.match(/\*\*Summary[:\-]?\*\*[\s\S]*?(?=\*\*|$)/i);
+  const summaryMatch = response.match(/\*\*Summary[:-]?\*\*[\s\S]*?(?=\*\*|$)/i);
   if (summaryMatch) {
     insights.push({
       id: `summary-${Date.now()}`,
       type: 'summary',
       title: 'Mood Summary',
-      content: summaryMatch[0].replace(/\*\*Summary[:\-]?\*\*/i, '').trim(),
+      content: summaryMatch[0].replace(/\*\*Summary[:-]?\*\*/i, '').trim(),
       confidence: 0.9,
       createdAt: new Date(),
     });
   }
 
   // Parse pattern insights
-  const patternMatch = response.match(/\*\*Patterns?[:\-]?\*\*[\s\S]*?(?=\*\*|$)/i);
+  const patternMatch = response.match(/\*\*Patterns?[:-]?\*\*[\s\S]*?(?=\*\*|$)/i);
   if (patternMatch) {
     insights.push({
       id: `pattern-${Date.now()}`,
       type: 'pattern',
       title: 'Detected Patterns',
-      content: patternMatch[0].replace(/\*\*Patterns?[:\-]?\*\*/i, '').trim(),
+      content: patternMatch[0].replace(/\*\*Patterns?[:-]?\*\*/i, '').trim(),
       confidence: 0.75,
       createdAt: new Date(),
     });
   }
 
   // Parse suggestions
-  const suggestionsMatch = response.match(/\*\*Suggestions?[:\-]?\*\*[\s\S]*?(?=\*\*|$)/i);
+  const suggestionsMatch = response.match(/\*\*Suggestions?[:-]?\*\*[\s\S]*?(?=\*\*|$)/i);
   if (suggestionsMatch) {
     insights.push({
       id: `recommendation-${Date.now()}`,
       type: 'recommendation',
       title: 'Suggestions for You',
-      content: suggestionsMatch[0].replace(/\*\*Suggestions?[:\-]?\*\*/i, '').trim(),
+      content: suggestionsMatch[0].replace(/\*\*Suggestions?[:-]?\*\*/i, '').trim(),
       confidence: 0.7,
       createdAt: new Date(),
     });
   }
 
   // Parse reflection question
-  const reflectionMatch = response.match(/\*\*Reflection[:\-]?\*\*[\s\S]*?(?=\*\*|$)/i);
+  const reflectionMatch = response.match(/\*\*Reflection[:-]?\*\*[\s\S]*?(?=\*\*|$)/i);
   if (reflectionMatch) {
     insights.push({
       id: `reflection-${Date.now()}`,
       type: 'reflection',
       title: 'Reflection Question',
-      content: reflectionMatch[0].replace(/\*\*Reflection[:\-]?\*\*/i, '').trim(),
+      content: reflectionMatch[0].replace(/\*\*Reflection[:-]?\*\*/i, '').trim(),
       confidence: 0.8,
       createdAt: new Date(),
     });

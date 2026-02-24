@@ -699,7 +699,7 @@ export async function updateStreakActivity(streakType: Streak['streak_type']): P
       const diffDays = Math.floor((activityDate.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
 
       let newCount = existing.current_count;
-      let milestones = { ...existing };
+      const milestones = { ...existing };
 
       if (diffDays === 0) {
         // Same day, no change

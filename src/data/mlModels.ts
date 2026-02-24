@@ -744,8 +744,8 @@ export class PatternDetectionEngine {
     });
 
     // Compare morning (5-11) vs evening (17-21)
-    let morningData = { total: 0, count: 0, emotions: new Map<string, number>() };
-    let eveningData = { total: 0, count: 0, emotions: new Map<string, number>() };
+    const morningData = { total: 0, count: 0, emotions: new Map<string, number>() };
+    const eveningData = { total: 0, count: 0, emotions: new Map<string, number>() };
 
     Object.entries(hourGroups).forEach(([hour, data]) => {
       const h = parseInt(hour);
@@ -827,8 +827,8 @@ export class PatternDetectionEngine {
     });
 
     // Weekday vs Weekend comparison
-    let weekdayData = { total: 0, count: 0, emotions: new Map<string, number>() };
-    let weekendData = { total: 0, count: 0, emotions: new Map<string, number>() };
+    const weekdayData = { total: 0, count: 0, emotions: new Map<string, number>() };
+    const weekendData = { total: 0, count: 0, emotions: new Map<string, number>() };
 
     Object.entries(dayGroups).forEach(([day, data]) => {
       const d = parseInt(day);
@@ -1249,7 +1249,7 @@ export class RecommendationEngine {
       .forEach((meditation, idx) => {
         let score = 0.8 - idx * 0.1;
         let predictedEffect = '';
-        let reasoning: string[] = [];
+        const reasoning: string[] = [];
         let urgency: 'high' | 'medium' | 'low' = 'medium';
 
         // Adjust score based on trends
@@ -1312,7 +1312,7 @@ export class RecommendationEngine {
       .forEach((pose, idx) => {
         let score = 0.7 - idx * 0.1;
         let predictedEffect = '';
-        let reasoning: string[] = [];
+        const reasoning: string[] = [];
         let urgency: 'high' | 'medium' | 'low' = 'medium';
 
         // Adjust for trends
@@ -1369,7 +1369,7 @@ export class RecommendationEngine {
       .forEach((playlist, idx) => {
         let score = 0.75 - idx * 0.1;
         let predictedEffect = '';
-        let reasoning: string[] = [];
+        const reasoning: string[] = [];
         let urgency: 'high' | 'medium' | 'low' = 'medium';
 
         if (trends.trend === 'declining' && ['calm', 'comfort'].includes(targetMood)) {
