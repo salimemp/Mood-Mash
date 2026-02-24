@@ -32,13 +32,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install --ignore-scripts
 
       - name: Run ESLint
-        run: yarn lint
+        run: npx eslint . --max-warnings=0
         continue-on-error: true
 
       - name: Run TypeScript type check
@@ -59,13 +58,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install --ignore-scripts
 
       - name: Run Unit Tests
-        run: yarn test:run
+        run: npx vitest run
 
       - name: Upload coverage reports
         if: always()
@@ -92,19 +90,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install --ignore-scripts
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Build the application
-        run: yarn build
+        run: npx vite build
 
       - name: Run E2E Tests
-        run: yarn test:e2e
+        run: npx playwright test
         continue-on-error: true
         env:
           BASE_URL: http://localhost:4173
@@ -133,13 +130,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install --ignore-scripts
 
-      - name: Run yarn audit
-        run: yarn audit --level=high
+      - name: Run npm audit
+        run: npx npm audit --audit-level=high
         continue-on-error: true
 
   # ===========================================================================
@@ -157,13 +153,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install --ignore-scripts
 
       - name: Build application
-        run: yarn build
+        run: npx vite build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
