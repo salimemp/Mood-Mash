@@ -137,6 +137,7 @@ const getRecommendedWellnessActivity = (
 describe('Wellness Utilities', () => {
   describe('calculateWellnessStats', () => {
     it('should calculate total sessions correctly', () => {
+      const now = new Date().toISOString();
       const sessions: WellnessSession[] = [
         {
           id: '1',
@@ -145,7 +146,9 @@ describe('Wellness Utilities', () => {
           category: 'mindfulness',
           name: 'Morning Meditation',
           duration_minutes: 15,
-          completed_at: new Date().toISOString(),
+          completed_at: now,
+          created_at: now,
+          updated_at: now,
         },
         {
           id: '2',
@@ -154,7 +157,9 @@ describe('Wellness Utilities', () => {
           category: 'exercise',
           name: 'Yoga Flow',
           duration_minutes: 30,
-          completed_at: new Date().toISOString(),
+          completed_at: now,
+          created_at: now,
+          updated_at: now,
         },
       ];
 
@@ -171,9 +176,10 @@ describe('Wellness Utilities', () => {
     });
 
     it('should calculate average duration', () => {
+      const now = new Date().toISOString();
       const sessions: WellnessSession[] = [
-        { id: '1', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 1', duration_minutes: 10, completed_at: new Date().toISOString() },
-        { id: '2', user_id: 'user-1', type: 'yoga', category: 'exercise', name: 'Session 2', duration_minutes: 20, completed_at: new Date().toISOString() },
+        { id: '1', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 1', duration_minutes: 10, completed_at: now, created_at: now, updated_at: now },
+        { id: '2', user_id: 'user-1', type: 'yoga', category: 'exercise', name: 'Session 2', duration_minutes: 20, completed_at: now, created_at: now, updated_at: now },
       ];
 
       const stats = calculateWellnessStats(sessions);
@@ -181,10 +187,11 @@ describe('Wellness Utilities', () => {
     });
 
     it('should identify favorite type', () => {
+      const now = new Date().toISOString();
       const sessions: WellnessSession[] = [
-        { id: '1', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 1', duration_minutes: 10, completed_at: new Date().toISOString() },
-        { id: '2', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 2', duration_minutes: 15, completed_at: new Date().toISOString() },
-        { id: '3', user_id: 'user-1', type: 'yoga', category: 'exercise', name: 'Session 3', duration_minutes: 20, completed_at: new Date().toISOString() },
+        { id: '1', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 1', duration_minutes: 10, completed_at: now, created_at: now, updated_at: now },
+        { id: '2', user_id: 'user-1', type: 'meditation', category: 'mindfulness', name: 'Session 2', duration_minutes: 15, completed_at: now, created_at: now, updated_at: now },
+        { id: '3', user_id: 'user-1', type: 'yoga', category: 'exercise', name: 'Session 3', duration_minutes: 20, completed_at: now, created_at: now, updated_at: now },
       ];
 
       const stats = calculateWellnessStats(sessions);
